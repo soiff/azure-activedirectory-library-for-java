@@ -64,6 +64,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5.1</version>
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
@@ -76,9 +77,9 @@
 				<version>2.4</version>
 				<configuration>
 					<warName>${project.artifactId}</warName>
-					<source>${project.basedir}\src</source>
-					<target>${maven.compiler.target}</target>
-					<encoding>utf-8</encoding>
+					<warSourceDirectory>${project.basedir}/src/main/webapp</warSourceDirectory>
+					<outputDirectory>${project.build.outputDirectory}</outputDirectory>
+					<resourceEncoding>utf-8</resourceEncoding>
 				</configuration>
 			</plugin>
 			<plugin>
