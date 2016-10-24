@@ -78,7 +78,7 @@
 				<configuration>
 					<warName>${project.artifactId}</warName>
 					<warSourceDirectory>${project.basedir}/src/main/webapp</warSourceDirectory>
-					<outputDirectory>${project.build.outputDirectory}</outputDirectory>
+					<outputDirectory>${project.build.directory}</outputDirectory>
 					<resourceEncoding>utf-8</resourceEncoding>
 				</configuration>
 			</plugin>

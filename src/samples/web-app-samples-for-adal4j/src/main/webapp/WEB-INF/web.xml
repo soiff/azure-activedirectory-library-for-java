@@ -24,6 +24,10 @@
 			<param-name>secret_key</param-name>
 			<param-value>YOUR_CLIENT_SECRET</param-value>
 		</init-param>
+		<init-param>
+			<param-name>test_resource</param-name>
+			<param-value>https://graph.windows.net</param-value>
+		</init-param>
 	</filter>
 	<filter-mapping>
 		<filter-name>BasicFilter</filter-name>

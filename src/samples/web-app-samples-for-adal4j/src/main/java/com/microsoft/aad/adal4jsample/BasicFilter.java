@@ -58,6 +58,9 @@ public class BasicFilter implements Filter {
     private String tenant = "";
     private String authority;
 
+    // Dynamic CRM Server root resource
+    public static String RESOURCE = null;
+
     public void destroy() {
 
     }
@@ -154,7 +157,7 @@ public class BasicFilter implements Filter {
             context = new AuthenticationContext(authority + tenant + "/", true,
                     service);
             Future<AuthenticationResult> future = context.acquireToken(
-                    "https://graph.windows.net", new ClientCredential(clientId,
+                    RESOURCE, new ClientCredential(clientId,
                             clientSecret), null);
             result = future.get();
         } catch (ExecutionException e) {
@@ -250,6 +253,9 @@ public class BasicFilter implements Filter {
         authority = config.getServletContext().getInitParameter("authority");
         tenant = config.getServletContext().getInitParameter("tenant");
         clientSecret = config.getInitParameter("secret_key");
+
+        // Test resource
+        RESOURCE = config.getInitParameter("test_resource");
     }
 
 }
