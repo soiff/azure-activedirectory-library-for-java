@@ -63,7 +63,8 @@ class AdalAuthorizatonGrant {
             outParams.putAll(this.params);
         }
 
-        outParams.put("scope", "openid");
+        //Not needed in ADFS3
+        //outParams.put("scope", "openid");
         outParams.putAll(grant.toParameters());
         return outParams;
     }

@@ -23,6 +23,11 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +38,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import javax.naming.ServiceUnavailableException;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -50,6 +59,7 @@ import com.nimbusds.openid.connect.sdk.AuthenticationErrorResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponseParser;
 import com.nimbusds.openid.connect.sdk.AuthenticationSuccessResponse;
+import sun.security.ssl.SSLSocketFactoryImpl;
 
 public class BasicFilter implements Filter {
 
@@ -200,6 +210,34 @@ public class BasicFilter implements Filter {
 
     }
 
+    static SSLSocketFactory factory;
+    static {
+        try {
+            SSLContext context = SSLContext.getInstance("SSL");
+            context.init(null, new TrustManager[]{
+                new X509TrustManager() {
+                    @Override
+                    public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+
+                    }
+
+                    @Override
+                    public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+
+                    }
+
+                    @Override
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+                }
+            }, new SecureRandom());
+            factory = context.getSocketFactory();
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+
     private AuthenticationResult getAccessToken(
             AuthorizationCode authorizationCode, String currentUri)
             throws Throwable {
@@ -211,8 +249,10 @@ public class BasicFilter implements Filter {
         ExecutorService service = null;
         try {
             service = Executors.newFixedThreadPool(1);
-            context = new AuthenticationContext(authority + tenant + "/", true,
+            context = new AuthenticationContext(authority + tenant + "/", false,
                     service);
+
+            context.setSslSocketFactory(factory);
             Future<AuthenticationResult> future = context
                     .acquireTokenByAuthorizationCode(authCode, new URI(
                             currentUri), credential, null);
