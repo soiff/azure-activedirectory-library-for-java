@@ -48,6 +48,8 @@ public final class AuthHelper {
     public static boolean containsAuthenticationData(
             HttpServletRequest httpRequest) {
         Map<String, String[]> map = httpRequest.getParameterMap();
+        if (httpRequest.getMethod().equalsIgnoreCase("GET") && map.containsKey("code") && map.get("code").length > 0)
+            return true;
         return httpRequest.getMethod().equalsIgnoreCase("POST") && (httpRequest.getParameterMap().containsKey(
                         AuthParameterNames.ERROR)
                         || httpRequest.getParameterMap().containsKey(
