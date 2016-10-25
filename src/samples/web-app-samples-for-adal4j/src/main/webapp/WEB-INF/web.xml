@@ -6,11 +6,11 @@
 	<display-name>Archetype Created Web Application</display-name>
 	<context-param>
 		<param-name>authority</param-name>
-		<param-value>https://login.windows.net/</param-value>
+		<param-value>https://adfs.geelycmadevdc.local/</param-value>
 	</context-param>
 	<context-param>
 		<param-name>tenant</param-name>
-		<param-value>YOUR_TENANT_NAME</param-value>
+		<param-value>adfs</param-value>
 	</context-param>
 
 	<filter>
@@ -18,7 +18,7 @@
 		<filter-class>com.microsoft.aad.adal4jsample.BasicFilter</filter-class>
 		<init-param>
 			<param-name>client_id</param-name>
-			<param-value>YOUR_CLIENT_ID</param-value>
+			<param-value>49448A74-C997-4C16-9606-FEC8C51ADFB2</param-value>
 		</init-param>
 		<init-param>
 			<param-name>secret_key</param-name>
@@ -26,12 +26,12 @@
 		</init-param>
 		<init-param>
 			<param-name>test_resource</param-name>
-			<param-value>https://graph.windows.net</param-value>
+			<param-value>https://dev/userauth</param-value>
 		</init-param>
 	</filter>
 	<filter-mapping>
 		<filter-name>BasicFilter</filter-name>
-		<url-pattern>/secure/*</url-pattern>
+		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
 	<servlet>

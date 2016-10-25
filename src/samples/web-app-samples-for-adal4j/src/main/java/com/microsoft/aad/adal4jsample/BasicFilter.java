@@ -80,8 +80,7 @@ public class BasicFilter implements Filter {
                                 && request.getServerPort() == 80
                                 || "https".equals(request.getScheme())
                                 && request.getServerPort() == 443 ? "" : ":"
-                                + request.getServerPort())
-                        + httpRequest.getRequestURI();
+                                + request.getServerPort());
                 String fullUrl = currentUri
                         + (httpRequest.getQueryString() != null ? "?"
                                 + httpRequest.getQueryString() : "");
@@ -241,10 +240,9 @@ public class BasicFilter implements Filter {
             throws UnsupportedEncodingException {
         String redirectUrl = authority
                 + this.tenant
-                + "/oauth2/authorize?response_type=code%20id_token&scope=openid&response_mode=form_post&redirect_uri="
+                + "/oauth2/authorize?response_type=code&redirect_uri="
                 + URLEncoder.encode(currentUri, "UTF-8") + "&client_id="
-                + clientId + "&resource=https%3a%2f%2fgraph.windows.net"
-                + "&nonce=" + UUID.randomUUID() + "&site_id=500879";
+                + clientId + "&resource=" + URLEncoder.encode(RESOURCE, "UTF-8");
         return redirectUrl;
     }
 
