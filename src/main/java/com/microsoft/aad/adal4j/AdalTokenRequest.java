@@ -20,9 +20,11 @@
 package com.microsoft.aad.adal4j;
 
 import javax.net.ssl.SSLSocketFactory;
-import java.io.IOException;
+import java.io.*;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.nimbusds.oauth2.sdk.ParseException;
@@ -34,10 +36,16 @@ import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.util.URLUtils;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
+import com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations.RSAKeyValueResolver;
+import org.jose4j.jwk.RsaJwkGenerator;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumer;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
+import org.jose4j.keys.resolvers.JwksDecryptionKeyResolver;
+import sun.security.rsa.RSAPublicKeyImpl;
+import sun.security.util.DerInputStream;
+import sun.security.util.DerValue;
 
 /**
  * Extension for TokenRequest to support additional header values like
@@ -99,28 +107,33 @@ class AdalTokenRequest {
             // and audience that identifies your system as the intended recipient.
             // If the JWT is encrypted too, you need only provide a decryption key or
             // decryption key resolver to the builder.
-            JwtConsumer jwtConsumer = new JwtConsumerBuilder()
-                .setRequireExpirationTime() // the JWT must have an expiration time
-                .setMaxFutureValidityInMinutes(300) // but the  expiration time can't be too crazy
-                .setAllowedClockSkewInSeconds(30) // allow some leeway in validating time based claims to account for clock skew
-                .setRequireSubject() // the JWT must have a subject claim
-                //.setExpectedIssuer("Issuer") // whom the JWT needs to have been issued by
-                //.setExpectedAudience("Audience") // to whom the JWT is intended for
-                //.setVerificationKey(rsaJsonWebKey.getKey()) // verify the signature with the public key
-                .build(); // create the JwtConsumer instance
+            try {
+                //InputStream is = new FileInputStream(new File((String) System.getProperties().get("jwttoken-pubkey")));
+                //List<Byte> buf = new ArrayList<>(4096);
+                //int b;
+                //while ((b = is.read()) >= 0)
+                //    buf.add((byte) b);
+                //final byte[] bytes = new byte[buf.size()];
+                //b = 0;
+                //for (Byte c : buf)
+                //    bytes[b++] = c;
+                JwtConsumer jwtConsumer = new JwtConsumerBuilder()
+                    .setSkipAllValidators()
+                    .setDisableRequireSignature()
+                    .setSkipSignatureVerification()
+                    .build(); // create the JwtConsumer instance
 
-            try
-            {
                 //  Validate the JWT and process it to the Claims
                 JwtClaims jwtClaims = jwtConsumer.processToClaims(tokens.getBearerAccessToken().getValue());
                 System.out.println("JWT validation succeeded! " + jwtClaims);
-            }
-            catch (InvalidJwtException e)
-            {
+            } catch (InvalidJwtException e) {
                 // InvalidJwtException will be thrown, if the JWT failed processing or validation in anyway.
                 // Hopefully with meaningful explanations(s) about what went wrong.
                 System.out.println("Invalid JWT! " + e);
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
+
 
             UserInfo info = null;
             if (tokens.getIDToken() != null) {
